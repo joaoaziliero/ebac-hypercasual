@@ -8,30 +8,25 @@ public class PlayerMotionControl : MonoBehaviour
 {
     private void Start()
     {
-        ManageTouchInput(Input.GetTouch, 0).AddTo(this);
+        ManageTouchInput(Input.GetTouch, 0, () => Input.touchCount).AddTo(this);
     }
 
-    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int index)
+    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int index, Func<int> TouchCount)
     {
         return Observable
             .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(index))
-            .Scan(new Vector2[] { Vector2.zero, Vector2.zero }, (acc, Entry) =>
+            .Where(Entry => TouchCount() > 0)
+            .Scan(new Vector2[] { Vector2.zero, Vector2.zero }, (array, Entry) =>
             {
-                try
+                return Entry().phase switch
                 {
-                    return Entry().phase switch
-                    {
-                        TouchPhase.Began => new Vector2[] { Entry().position, Vector2.zero },
-                        TouchPhase.Moved => new Vector2[] { acc[0], Entry().position - acc[0] },
-                        TouchPhase.Stationary => acc,
-                        _ => new Vector2[] { Vector2.zero, Vector2.zero }
-                    };
-                }
-                catch (ArgumentException)
-                {
-                    return new Vector2[] { Vector2.zero, Vector2.zero };
-                }
+                    TouchPhase.Began => new Vector2[] { Entry().position, Vector2.zero },
+                    TouchPhase.Moved => new Vector2[] { array[0], Entry().position - array[0] },
+                    TouchPhase.Stationary => new Vector2[] { Entry().position, Vector2.zero },
+                    _ => new Vector2[] { Vector2.zero, Vector2.zero }
+                };
             })
-            .Subscribe(list => Debug.Log(list[1]));
+            .Select(array => array[1].x)
+            .Subscribe(deltaX => { transform.position += 0.01f * new Vector3(deltaX, 0, 0); } );
     }
 }
