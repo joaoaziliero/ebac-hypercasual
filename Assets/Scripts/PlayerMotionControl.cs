@@ -3,30 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using R3;
 using System;
+using DG.Tweening;
 
 public class PlayerMotionControl : MonoBehaviour
 {
     private void Start()
     {
-        ManageTouchInput(Input.GetTouch, 0, () => Input.touchCount).AddTo(this);
+        ManageTouchInput(
+            TouchCount: () => Input.touchCount,
+            GetTouch: Input.GetTouch,
+            index: 0,
+            transform: gameObject.transform,
+            displacementMultiplier: 5,
+            tweenTimeInterval: 2
+            ).AddTo(this);
     }
 
-    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int index, Func<int> TouchCount)
+    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int index, Func<int> TouchCount, Transform transform, float displacementMultiplier, float tweenTimeInterval)
     {
         return Observable
             .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(index))
+            .ThrottleLast(TimeSpan.FromMilliseconds(125))
             .Where(Entry => TouchCount() > 0)
-            .Scan(new Vector2[] { Vector2.zero, Vector2.zero }, (array, Entry) =>
+            .Select<Func<Touch>, Action>(Entry =>
             {
                 return Entry().phase switch
                 {
-                    TouchPhase.Began => new Vector2[] { Entry().position, Vector2.zero },
-                    TouchPhase.Moved => new Vector2[] { array[0], Entry().position - array[0] },
-                    TouchPhase.Stationary => new Vector2[] { Entry().position, Vector2.zero },
-                    _ => new Vector2[] { Vector2.zero, Vector2.zero }
+                    TouchPhase.Moved => () =>
+                    {
+                        transform.DOMoveX(transform.position.x + displacementMultiplier * Mathf.Sign(Entry().deltaPosition.x), tweenTimeInterval);
+                    }
+                    ,
+                    _ => null,
                 };
             })
-            .Select(array => array[1].x)
-            .Subscribe(deltaX => { transform.position += 0.01f * new Vector3(deltaX, 0, 0); } );
+            .Where(action => action != null)
+            .Subscribe(action => action());
     }
 }
