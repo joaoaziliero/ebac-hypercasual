@@ -12,18 +12,16 @@ public class PlayerMotionControl : MonoBehaviour
         ManageTouchInput(
             TouchCount: () => Input.touchCount,
             GetTouch: Input.GetTouch,
-            index: 0,
+            fingerIndex: 0,
             transform: gameObject.transform,
-            displacementMultiplier: 5,
-            tweenTimeInterval: 2
+            displacementMultiplier: 3
             ).AddTo(this);
     }
 
-    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int index, Func<int> TouchCount, Transform transform, float displacementMultiplier, float tweenTimeInterval)
+    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int fingerIndex, Func<int> TouchCount, Transform transform, float displacementMultiplier)
     {
         return Observable
-            .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(index))
-            .ThrottleLast(TimeSpan.FromMilliseconds(125))
+            .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(fingerIndex))
             .Where(Entry => TouchCount() > 0)
             .Select<Func<Touch>, Action>(Entry =>
             {
@@ -31,10 +29,16 @@ public class PlayerMotionControl : MonoBehaviour
                 {
                     TouchPhase.Moved => () =>
                     {
-                        transform.DOMoveX(transform.position.x + displacementMultiplier * Mathf.Sign(Entry().deltaPosition.x), tweenTimeInterval);
+                        transform.DOMoveX(transform.position.x + displacementMultiplier * Mathf.Sign(Entry().deltaPosition.x), 1);
                     }
                     ,
-                    _ => null,
+                    TouchPhase.Ended => () =>
+                    {
+                        var screenPos = Camera.main.WorldToScreenPoint(transform.position);
+                        transform.DOMove(Camera.main.ScreenToWorldPoint(new Vector3(Entry().position.x, screenPos.y, screenPos.z)), 1);
+                    }
+                    ,
+                    _ => null
                 };
             })
             .Where(action => action != null)
