@@ -29,13 +29,14 @@ public class PlayerMotionControl : MonoBehaviour
                 {
                     TouchPhase.Moved => () =>
                     {
-                        transform.DOMoveX(transform.position.x + displacementMultiplier * Mathf.Sign(Entry().deltaPosition.x), 1);
+                        transform.DOMoveX(displacementMultiplier * Mathf.Sign(Entry().deltaPosition.x), 1).SetRelative(true);
                     }
                     ,
                     TouchPhase.Ended => () =>
                     {
                         var screenPos = Camera.main.WorldToScreenPoint(transform.position);
-                        transform.DOMove(Camera.main.ScreenToWorldPoint(new Vector3(Entry().position.x, screenPos.y, screenPos.z)), 1);
+                        var worldPos = Camera.main.ScreenToWorldPoint(new Vector3(Entry().position.x, 0, screenPos.z));
+                        transform.DOMoveX(worldPos.x, 1);
                     }
                     ,
                     _ => null
