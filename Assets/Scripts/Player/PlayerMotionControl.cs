@@ -14,17 +14,16 @@ public class PlayerMotionControl : MonoBehaviour
         ManageTouchInput(
             TouchCount: () => Input.touchCount,
             GetTouch: Input.GetTouch,
-            fingerIndex: 0,
             transform: gameObject.transform,
-            displacementMultiplier: _settings.HorizontalSpeed(),
+            speed: _settings.HorizontalSpeed(),
             camera: Camera.main
             ).AddTo(this);
     }
 
-    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int fingerIndex, Func<int> TouchCount, Transform transform, float displacementMultiplier, Camera camera)
+    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, Func<int> TouchCount, Transform transform, float speed, Camera camera)
     {
         return Observable
-            .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(fingerIndex))
+            .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(0))
             .Where(Entry => TouchCount() > 0)
             .Select<Func<Touch>, Action>(Entry =>
             {
@@ -32,7 +31,7 @@ public class PlayerMotionControl : MonoBehaviour
                 {
                     TouchPhase.Moved => () =>
                     {
-                        transform.DOMoveX(displacementMultiplier * Mathf.Sign(Entry().deltaPosition.x), 1).SetRelative(true);
+                        transform.DOMoveX(speed * Mathf.Sign(Entry().deltaPosition.x), 1).SetRelative(true);
                     }
                     ,
                     TouchPhase.Ended => () =>
