@@ -14,11 +14,12 @@ public class PlayerMotionControl : MonoBehaviour
             GetTouch: Input.GetTouch,
             fingerIndex: 0,
             transform: gameObject.transform,
-            displacementMultiplier: 3
+            displacementMultiplier: 3,
+            camera: Camera.main
             ).AddTo(this);
     }
 
-    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int fingerIndex, Func<int> TouchCount, Transform transform, float displacementMultiplier)
+    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, int fingerIndex, Func<int> TouchCount, Transform transform, float displacementMultiplier, Camera camera)
     {
         return Observable
             .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(fingerIndex))
@@ -34,8 +35,8 @@ public class PlayerMotionControl : MonoBehaviour
                     ,
                     TouchPhase.Ended => () =>
                     {
-                        var screenPos = Camera.main.WorldToScreenPoint(transform.position);
-                        var worldPos = Camera.main.ScreenToWorldPoint(new Vector3(Entry().position.x, 0, screenPos.z));
+                        var screenPos = camera.WorldToScreenPoint(transform.position);
+                        var worldPos = camera.ScreenToWorldPoint(new Vector3(Entry().position.x, 0, screenPos.z));
                         transform.DOMoveX(worldPos.x, 1);
                     }
                     ,
