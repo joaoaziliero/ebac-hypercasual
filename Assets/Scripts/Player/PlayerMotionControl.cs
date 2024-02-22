@@ -15,12 +15,13 @@ public class PlayerMotionControl : MonoBehaviour
             TouchCount: () => Input.touchCount,
             GetTouch: Input.GetTouch,
             transform: gameObject.transform,
+            camera: Camera.main,
             speed: _settings.HorizontalSpeed(),
-            camera: Camera.main
+            smoothFinishTime: _settings.SmoothFinishTime()
             ).AddTo(this);
     }
 
-    private IDisposable ManageTouchInput(Func<int, Touch> GetTouch, Func<int> TouchCount, Transform transform, float speed, Camera camera)
+    private IDisposable ManageTouchInput(Func<int> TouchCount, Func<int, Touch> GetTouch, Transform transform, Camera camera, float speed, float smoothFinishTime)
     {
         return Observable
             .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(0))
@@ -31,14 +32,14 @@ public class PlayerMotionControl : MonoBehaviour
                 {
                     TouchPhase.Moved => () =>
                     {
-                        transform.DOMoveX(speed * Mathf.Sign(Entry().deltaPosition.x), 1).SetRelative(true);
+                        transform.DOMoveX(speed * Mathf.Sign(Entry().deltaPosition.x), smoothFinishTime).SetRelative(true);
                     }
                     ,
                     TouchPhase.Ended => () =>
                     {
                         var screenPos = camera.WorldToScreenPoint(transform.position);
                         var worldPos = camera.ScreenToWorldPoint(new Vector3(Entry().position.x, 0, screenPos.z));
-                        transform.DOMoveX(worldPos.x, 1);
+                        transform.DOMoveX(worldPos.x, smoothFinishTime);
                     }
                     ,
                     _ => null
