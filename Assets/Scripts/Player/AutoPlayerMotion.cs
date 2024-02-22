@@ -6,8 +6,10 @@ using UnityEngine;
 
 public class AutoPlayerMotion : MonoBehaviour
 {
+    [SerializeField] private SO_PlayerMotionSettings _settings;
+
     private void Start()
     {
-        GetComponent<Rigidbody>().velocity = 5 * Vector3.forward;
+        GetComponent<Rigidbody>().velocity = _settings.ForwardSpeed() * Vector3.forward;
     }
 }

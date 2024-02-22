@@ -7,6 +7,8 @@ using DG.Tweening;
 
 public class PlayerMotionControl : MonoBehaviour
 {
+    [SerializeField] private SO_PlayerMotionSettings _settings;
+    
     private void Start()
     {
         ManageTouchInput(
@@ -14,7 +16,7 @@ public class PlayerMotionControl : MonoBehaviour
             GetTouch: Input.GetTouch,
             fingerIndex: 0,
             transform: gameObject.transform,
-            displacementMultiplier: 3,
+            displacementMultiplier: _settings.HorizontalSpeed(),
             camera: Camera.main
             ).AddTo(this);
     }
