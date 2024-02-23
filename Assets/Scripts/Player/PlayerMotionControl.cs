@@ -10,14 +10,11 @@ public class PlayerMotionControl : MonoBehaviour
     private CompositeDisposable _disposable;
     [SerializeField] private SO_PlayerMotionSettings _settings;
 
-    private void Awake()
+    private void OnEnable()
     {
         _disposable?.Dispose();
         _disposable = new CompositeDisposable();
-    }
 
-    private void Start()
-    {
         ManageTouchInput(
             TouchCount: () => Input.touchCount,
             GetTouch: Input.GetTouch,
