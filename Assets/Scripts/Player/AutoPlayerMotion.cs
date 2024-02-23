@@ -8,7 +8,7 @@ public class AutoPlayerMotion : MonoBehaviour
 {
     [SerializeField] private SO_PlayerMotionSettings _settings;
 
-    private void Start()
+    private void OnEnable()
     {
         GetComponent<Rigidbody>().velocity = _settings.ForwardSpeed() * Vector3.forward;
     }
