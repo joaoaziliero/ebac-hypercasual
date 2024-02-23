@@ -7,8 +7,15 @@ using DG.Tweening;
 
 public class PlayerMotionControl : MonoBehaviour
 {
+    private CompositeDisposable _disposable;
     [SerializeField] private SO_PlayerMotionSettings _settings;
-    
+
+    private void Awake()
+    {
+        _disposable?.Dispose();
+        _disposable = new CompositeDisposable();
+    }
+
     private void Start()
     {
         ManageTouchInput(
@@ -18,7 +25,7 @@ public class PlayerMotionControl : MonoBehaviour
             camera: Camera.main,
             speed: _settings.HorizontalSpeed(),
             smoothFinishTime: _settings.SmoothFinishTime()
-            ).AddTo(this);
+            ).AddTo(_disposable);
     }
 
     private IDisposable ManageTouchInput(Func<int> TouchCount, Func<int, Touch> GetTouch, Transform transform, Camera camera, float speed, float smoothFinishTime)
@@ -47,5 +54,10 @@ public class PlayerMotionControl : MonoBehaviour
             })
             .Where(action => action != null)
             .Subscribe(action => action());
+    }
+
+    private void OnDisable()
+    {
+        _disposable.Dispose();
     }
 }
