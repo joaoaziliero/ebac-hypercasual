@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6515851c74a970d4c89a0c6f2c892b69, type: 3}
   m_Name: SO_PlayerMotionSettings
   m_EditorClassIdentifier: 
-  forwardSpeed: 0
+  forwardSpeed: 3
   horizontalSpeed: 2
   smoothFinishTime: 0.5
