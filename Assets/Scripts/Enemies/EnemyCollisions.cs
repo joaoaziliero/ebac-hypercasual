@@ -13,7 +13,7 @@ public class EnemyCollisions : MonoBehaviour
     {
         ManageEnemyInteractions(
             collider: GetComponent<Collider>(),
-            player:GetComponent<PlayerMotionControl>(),
+            player: GetComponent<PlayerMotionControl>(),
             tag: _tagForEnemies
             ).AddTo(this);
     }
