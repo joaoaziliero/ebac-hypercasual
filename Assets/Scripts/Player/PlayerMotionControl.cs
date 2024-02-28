@@ -7,14 +7,10 @@ using DG.Tweening;
 
 public class PlayerMotionControl : MonoBehaviour
 {
-    private CompositeDisposable _disposable;
     [SerializeField] private SO_PlayerMotionSettings _settings;
 
-    private void OnEnable()
+    private void Start()
     {
-        _disposable?.Dispose();
-        _disposable = new CompositeDisposable();
-
         ManageTouchInput(
             TouchCount: () => Input.touchCount,
             GetTouch: Input.GetTouch,
@@ -22,7 +18,7 @@ public class PlayerMotionControl : MonoBehaviour
             camera: Camera.main,
             speed: _settings.HorizontalSpeed(),
             smoothFinishTime: _settings.SmoothFinishTime()
-            ).AddTo(_disposable);
+            ).AddTo(this);
     }
 
     private IDisposable ManageTouchInput(Func<int> TouchCount, Func<int, Touch> GetTouch, Transform transform, Camera camera, float speed, float smoothFinishTime)
@@ -30,31 +26,20 @@ public class PlayerMotionControl : MonoBehaviour
         return Observable
             .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(0))
             .Where(Entry => TouchCount() > 0)
-            .Select<Func<Touch>, Action>(Entry =>
+            .Select<Func<Touch>, float>(Entry =>
             {
                 return Entry().phase switch
                 {
-                    TouchPhase.Moved => () =>
-                    {
-                        transform.DOMoveX(speed * Mathf.Sign(Entry().deltaPosition.x), smoothFinishTime).SetRelative(true);
-                    }
-                    ,
-                    TouchPhase.Ended => () =>
-                    {
-                        var screenPos = camera.WorldToScreenPoint(transform.position);
-                        var worldPos = camera.ScreenToWorldPoint(new Vector3(Entry().position.x, 0, screenPos.z));
-                        transform.DOMoveX(worldPos.x, smoothFinishTime);
-                    }
-                    ,
-                    _ => null
+                    TouchPhase.Moved => speed * Mathf.Sign(Entry().deltaPosition.x),
+                    TouchPhase.Ended => camera.ScreenToWorldPoint(
+                        new Vector3(Entry().position.x, 0, camera.WorldToScreenPoint(transform.position).z)).x -
+                        transform.position.x,
+                    _ => 0,
                 };
             })
-            .Where(action => action != null)
-            .Subscribe(action => action());
+            .Subscribe(deltaX => MoveXByTween(transform, deltaX, smoothFinishTime));
     }
 
-    private void OnDisable()
-    {
-        _disposable.Dispose();
-    }
+    private readonly Action<Transform, float, float> MoveXByTween =
+        (transform, distance, time) => transform.DOMoveX(distance, time).SetRelative(true);
 }
