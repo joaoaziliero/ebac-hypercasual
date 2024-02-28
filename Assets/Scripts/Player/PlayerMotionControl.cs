@@ -26,7 +26,7 @@ public class PlayerMotionControl : MonoBehaviour
         return Observable
             .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(0))
             .Where(Entry => TouchCount() > 0)
-            .Select<Func<Touch>, float>(Entry =>
+            .Select(Entry =>
             {
                 return Entry().phase switch
                 {
