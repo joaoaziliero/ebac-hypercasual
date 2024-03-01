@@ -8,28 +8,15 @@ using TMPro;
 
 public class CollectableCounter : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _coinsHeadsUpDisplay;
-    [SerializeField] private string _tagForCoins;
-
-    private void Start()
-    {
-        ManageCollections(
-            playerCollider: GetComponent<Collider>(),
-            tag: _tagForCoins,
-            HUD: _coinsHeadsUpDisplay)
-            .AddTo(this);
-    }
-
-    private IDisposable ManageCollections(Collider playerCollider, string tag, TextMeshProUGUI HUD)
+    protected IDisposable ManageCollections(Collider playerCollider, string tagForCollectable, TextMeshProUGUI textDisplay)
     {
         return playerCollider
             .OnTriggerEnterAsObservable()
-            .Where(collision => collision.gameObject.CompareTag(tag))
-            .Select<Collider, Action>(collision => () =>
-            {
-                collision.gameObject.SetActive(false);
-                HUD.text = (int.Parse(HUD.text) + 1).ToString();
-            })
-            .Subscribe(action => action());
+            .Where(collision => collision.gameObject.CompareTag(tagForCollectable))
+            .Scan(0, (accumulator, collision) => accumulator + 1)
+            .Subscribe(accumulator => UpdateCount(textDisplay, accumulator));
     }
+
+    private readonly Action<TextMeshProUGUI, int> UpdateCount =
+        (textDisplay, accumulator) => { textDisplay.text = accumulator.ToString(); };
 }
