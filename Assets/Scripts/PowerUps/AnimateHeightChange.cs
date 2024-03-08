@@ -12,6 +12,7 @@ public class AnimateHeightChange : MonoBehaviour
     [SerializeField] private float _heightDifference;
     [SerializeField] private float _totalTweeningTime;
     [SerializeField] private Ease _animationEase;
+    [SerializeField] private GameObject _animatorSequenceCarrier;
 
     private void Start()
     {
@@ -20,11 +21,12 @@ public class AnimateHeightChange : MonoBehaviour
             tagForPlayer: _tagForPlayer,
             deltaY: _heightDifference,
             timeToReset: _totalTweeningTime,
-            animationEase: _animationEase)
+            animationEase: _animationEase,
+            carrier: _animatorSequenceCarrier)
             .AddTo(this);
     }
 
-    private IDisposable ManageAnimation(Collider powerUpTrigger, string tagForPlayer, float deltaY, float timeToReset, Ease animationEase)
+    private IDisposable ManageAnimation(Collider powerUpTrigger, string tagForPlayer, float deltaY, float timeToReset, Ease animationEase, GameObject carrier)
     {
         return powerUpTrigger
             .OnTriggerEnterAsObservable()
@@ -32,6 +34,7 @@ public class AnimateHeightChange : MonoBehaviour
             .Subscribe(collider =>
             {
                 ActivateHeightTweens(collider.transform, deltaY, timeToReset, animationEase);
+                SpawnAndScheduleDestruction(carrier, collider.transform, timeToReset);
                 Destroy(this.gameObject);
             });
     }
@@ -48,4 +51,7 @@ public class AnimateHeightChange : MonoBehaviour
                     .SetRelative(true)
                     .SetDelay(timeSpan / 3));
         };
+
+    private readonly Action<GameObject, Transform, float> SpawnAndScheduleDestruction =
+        (prefab, parent, timeSpan) => { Destroy(Instantiate(prefab, parent.transform), timeSpan); };
 }
