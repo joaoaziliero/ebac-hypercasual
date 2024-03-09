@@ -44,5 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a73be7cf72229dd40b457aa2a4956e2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _firstAnimationTrigger: IDLE
-  _lastAnimationTrigger: RUN
+  AnimationTriggerNames: []
+  AnimationTriggerIntervals: []
