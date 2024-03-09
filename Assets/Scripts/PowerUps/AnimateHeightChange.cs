@@ -33,13 +33,13 @@ public class AnimateHeightChange : MonoBehaviour
             .Where(collider => collider.gameObject.CompareTag(tagForPlayer))
             .Subscribe(collider =>
             {
-                ActivateHeightTweens(collider.transform, deltaY, timeToReset, animationEase);
-                SpawnAndScheduleDestruction(carrier, collider.transform, timeToReset);
+                PlayTweenSequence(collider.transform, deltaY, timeToReset, animationEase);
+                SpawnAndActivate(carrier, collider.transform);
                 Destroy(this.gameObject);
             });
     }
 
-    private readonly Action<Transform, float, float, Ease> ActivateHeightTweens =
+    private readonly Action<Transform, float, float, Ease> PlayTweenSequence =
         (transform, deltaY, timeSpan, ease) =>
         {
             DOTween.Sequence()
@@ -52,6 +52,5 @@ public class AnimateHeightChange : MonoBehaviour
                     .SetDelay(timeSpan / 3));
         };
 
-    private readonly Action<GameObject, Transform, float> SpawnAndScheduleDestruction =
-        (prefab, parent, timeSpan) => { Destroy(Instantiate(prefab, parent.transform), timeSpan); };
+    private readonly Action<GameObject, Transform> SpawnAndActivate = (prefab, parent) => { Instantiate(prefab, parent).SetActive(true); };
 }
