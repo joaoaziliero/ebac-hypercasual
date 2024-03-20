@@ -112,4 +112,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tagForPlayer: Player
   _extenderPrefab: {fileID: 6051216826977438235, guid: 03a0ffc1061b30f4ab8f25fcf989105a, type: 3}
-  _timeToDespawn: 10
+  _timeToDespawn: 1.25
