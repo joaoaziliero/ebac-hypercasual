@@ -13,7 +13,7 @@ public class CollectableCounter : MonoBehaviour
         return playerCollider
             .OnTriggerEnterAsObservable()
             .Where(collision => collision.gameObject.CompareTag(tagForCollectable))
-            .Scan(0, (accumulator, collision) => accumulator + 1)
+            .Scan(int.Parse(textDisplay.text), (accumulator, collision) => accumulator + 1)
             .Subscribe(accumulator => UpdateCount(textDisplay, accumulator));
     }
 
