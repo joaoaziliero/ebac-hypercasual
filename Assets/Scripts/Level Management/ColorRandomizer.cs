@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ColorRandomizer : MonoBehaviour
 {
-    [SerializeField] private List<Color> _colorPallete;
+    [SerializeField] private List<Color> _colorPalette;
     [SerializeField] private List<Material> _materialsToColor;
 
     private void Start()
@@ -14,7 +14,7 @@ public class ColorRandomizer : MonoBehaviour
             (
             rand: new System.Random(),
             materials: _materialsToColor,
-            colors: _colorPallete
+            colors: _colorPalette
             )
             .ForEach(tuple => { tuple.material.color = tuple.color; });
     }
