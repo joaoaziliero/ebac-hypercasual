@@ -111,4 +111,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tagForPlayer: Player
-  _invincibilityTimeSpan: 10
+  _invincibilityTimeSpan: 2.5
