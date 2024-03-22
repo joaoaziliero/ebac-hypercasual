@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6503287670399755045}
   m_Layer: 0
   m_Name: PFB_HeightChanger
-  m_TagString: Untagged
+  m_TagString: PowerUp
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -114,3 +114,4 @@ MonoBehaviour:
   _heightDifference: 10
   _totalTweeningTime: 15
   _animationEase: 4
+  _animatorSequenceCarrier: {fileID: 0}
