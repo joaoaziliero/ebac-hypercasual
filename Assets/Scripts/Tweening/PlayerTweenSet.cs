@@ -35,11 +35,11 @@ public class PlayerTweenSet : MonoBehaviour
         return playerCollider
             .OnTriggerEnterAsObservable()
             .Where(collider => collider.gameObject.CompareTag(tagForPowerUps))
-            .Subscribe(_ => { transform.DOComplete(); BounceLocalScale(transform, tweenDuration, ease); });
+            .Subscribe(_ => { BounceLocalScale(transform, tweenDuration, ease); });
     }
 
     private readonly Action<Transform, float, Ease> BounceLocalScale = (transform, duration, ease) =>
     {
-        transform.DOScale(1.2f, duration).SetLoops(2, LoopType.Yoyo).SetEase(ease);
+        if (!DOTween.IsTweening(transform)) transform.DOScale(1.2f, duration).SetLoops(2, LoopType.Yoyo).SetEase(ease);
     };
 }
