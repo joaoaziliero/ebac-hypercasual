@@ -27,9 +27,10 @@ public class EnemyCollisions : MonoBehaviour
         return collider
             .OnCollisionEnterAsObservable()
             .Where(collision => collision.gameObject.CompareTag(tagForEnemies))
-            .Subscribe(_ => { NudgeBackwards(transform); PlayAnimation(animator, name); });
+            .Subscribe(_ => { NudgeBackwards(transform); PlayAnimation(animator, name); Vanish(transform); });
     }
 
     private readonly Action<Transform> NudgeBackwards = (transform) => { transform.DOMoveZ(-3, 1).SetRelative(true); };
     private readonly Action<Animator, string> PlayAnimation = (animator, name) => { animator.SetTrigger(name); };
+    private readonly Action<Transform> Vanish = (transform) => { transform.DOScale(0, 1).SetDelay(3); };
 }
