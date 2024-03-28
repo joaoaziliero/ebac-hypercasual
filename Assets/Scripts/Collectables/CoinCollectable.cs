@@ -8,20 +8,22 @@ using UnityEngine;
 public class CoinCollectable : MonoBehaviour
 {
     [SerializeField] private string _tagForPlayer;
+    [SerializeField] private GameObject _prefabTospawnOnCollection;
 
     private void Start()
     {
         ManagePlayerInteractions(
             thisCollider: GetComponent<Collider>(),
-            tagForPlayer: _tagForPlayer)
+            tagForPlayer: _tagForPlayer,
+            prefab: _prefabTospawnOnCollection)
             .AddTo(this);
     }
 
-    private IDisposable ManagePlayerInteractions(Collider thisCollider, string tagForPlayer)
+    private IDisposable ManagePlayerInteractions(Collider thisCollider, string tagForPlayer, GameObject prefab)
     {
         return thisCollider
             .OnTriggerEnterAsObservable()
             .Where(collision => collision.gameObject.CompareTag(tagForPlayer))
-            .Subscribe(_ => Destroy(this.gameObject));
+            .Subscribe(_ => { Instantiate(prefab).transform.position = this.transform.position; Destroy(this.gameObject); });
     }
 }

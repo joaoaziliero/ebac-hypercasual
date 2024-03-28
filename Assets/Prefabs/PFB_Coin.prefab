@@ -111,3 +111,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tagForPlayer: Player
+  _prefabTospawnOnCollection: {fileID: 435200903310552163, guid: 2ea704b7ea37822409e88c3c15ca559b, type: 3}
