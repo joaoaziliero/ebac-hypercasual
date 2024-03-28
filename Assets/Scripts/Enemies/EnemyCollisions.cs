@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 using R3;
 using R3.Triggers;
@@ -10,6 +11,7 @@ public class EnemyCollisions : MonoBehaviour
 {
     [SerializeField] private string _tagForEnemies;
     [SerializeField] private string _deathAnimationTrigger;
+    [SerializeField] private string _sceneToLoad;
 
     private void Start()
     {
@@ -27,10 +29,15 @@ public class EnemyCollisions : MonoBehaviour
         return collider
             .OnCollisionEnterAsObservable()
             .Where(collision => collision.gameObject.CompareTag(tagForEnemies))
-            .Subscribe(_ => { NudgeBackwards(transform); PlayAnimation(animator, name); Vanish(transform); });
+            .Subscribe(_ => { NudgeBackwards(transform); PlayAnimation(animator, name); Vanish(transform); Invoke(nameof(LoadSceneByName), 5); });
     }
 
     private readonly Action<Transform> NudgeBackwards = (transform) => { transform.DOMoveZ(-3, 1).SetRelative(true); };
     private readonly Action<Animator, string> PlayAnimation = (animator, name) => { animator.SetTrigger(name); };
     private readonly Action<Transform> Vanish = (transform) => { transform.DOScale(0, 1).SetDelay(3); };
+
+    private void LoadSceneByName()
+    {
+        SceneManager.LoadScene(_sceneToLoad);
+    }
 }
