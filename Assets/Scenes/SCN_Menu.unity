@@ -377,7 +377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14901961, g: 0.8509804, b: 0.7529412, a: 0.34901962}
+  m_Color: {r: 0.14901957, g: 0.21831419, b: 0.8509804, a: 0.2}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -516,6 +516,7 @@ GameObject:
   - component: {fileID: 1645464449}
   - component: {fileID: 1645464448}
   - component: {fileID: 1645464447}
+  - component: {fileID: 1645464450}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -589,6 +590,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!45 &1645464450
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1645464446}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 2100000, guid: 5bc2678e28259884cafed62a61065ca8, type: 2}
 --- !u!1 &1660149744
 GameObject:
   m_ObjectHideFlags: 0
