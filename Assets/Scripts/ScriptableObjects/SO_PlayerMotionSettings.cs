@@ -10,6 +10,7 @@ public class SO_PlayerMotionSettings : ScriptableObject
     [SerializeField] private float forwardSpeed;
     [Header("Horizontal Motion")]
     [SerializeField] private float horizontalSpeed;
+    [SerializeField] public float clampX;
     [SerializeField] private float smoothFinishTime;
 
     #region DATA_RETRIEVER_FUNCTIONS

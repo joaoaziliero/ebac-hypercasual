@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forwardSpeed: 3
   horizontalSpeed: 1
+  clampX: 3.5
   smoothFinishTime: 0.5

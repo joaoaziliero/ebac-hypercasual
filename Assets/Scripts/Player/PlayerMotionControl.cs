@@ -16,12 +16,13 @@ public class PlayerMotionControl : MonoBehaviour
             GetTouch: Input.GetTouch,
             transform: gameObject.transform,
             camera: Camera.main,
+            clamp: _settings.clampX,
             speed: _settings.HorizontalSpeed(),
             smoothFinishTime: _settings.SmoothFinishTime()
             ).AddTo(this);
     }
 
-    private IDisposable ManageTouchInput(Func<int> TouchCount, Func<int, Touch> GetTouch, Transform transform, Camera camera, float speed, float smoothFinishTime)
+    private IDisposable ManageTouchInput(Func<int> TouchCount, Func<int, Touch> GetTouch, Transform transform, Camera camera, float speed, float clamp, float smoothFinishTime)
     {
         return Observable
             .EveryValueChanged<Func<int, Touch>, Func<Touch>>(GetTouch, Entry => () => Entry(0))
@@ -31,8 +32,8 @@ public class PlayerMotionControl : MonoBehaviour
                 return Entry().phase switch
                 {
                     TouchPhase.Moved => speed * Mathf.Sign(Entry().deltaPosition.x),
-                    TouchPhase.Ended => camera.ScreenToWorldPoint(
-                        new Vector3(Entry().position.x, 0, camera.WorldToScreenPoint(transform.position).z)).x -
+                    TouchPhase.Ended => Mathf.Clamp(camera.ScreenToWorldPoint(
+                        new Vector3(Entry().position.x, 0, camera.WorldToScreenPoint(transform.position).z)).x, -clamp, clamp) -
                         transform.position.x,
                     _ => 0,
                 };
